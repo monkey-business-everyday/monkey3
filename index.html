@@ -1,1 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Evryday Evrywhr Yoga</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #faf8f2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Georgia, serif;
+      overflow-x: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+    .header {
+      width: 100%;
+      max-width: 420px;
+      padding: 14px 18px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .title { font-size: 1.55rem; font-weight: bold; line-height: 1.15; color: #1a1a1a; }
+    .subtitle { font-size: 0.75rem; color: #444; text-align: right; font-style: italic; margin-top: 6px; line-height: 1.5; }
+    canvas { display: block; touch-action: none; }
+    .bottom { width: 100%; max-width: 420px; padding: 8px 14px 4px; text-align: center; }
+    .let-monkey {
+      border: 2px solid #1a1a1a; border-radius: 24px;
+      padding: 8px 18px; font-size: 0.82rem; font-weight: bold;
+      letter-spacing: 0.1em; color: #1a1a1a;
+      display: inline-flex; align-items: center; gap: 8px; margin-bottom: 5px;
+    }
+    .spin-text { font-size: 0.68rem; color: #555; font-style: italic; margin-bottom: 8px; line-height: 1.5; }
+    .how-label { font-size: 0.58rem; letter-spacing: 0.18em; color: #888; text-transform: uppercase; margin-bottom: 6px; }
+    .steps { display: flex; gap: 6px; justify-content: center; margin-bottom: 10px; }
+    .step {
+      border: 1.5px solid #ccc; border-radius: 8px; padding: 6px 5px;
+      font-size: 0.6rem; color: #333; flex: 1; text-align: center; line-height: 1.5;
+    }
+    .step-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 15px; height: 15px; border: 1.5px solid #333;
+      border-radius: 50%; font-size: 0.58rem; font-weight: bold; margin-bottom: 3px;
+    }
+    #btn {
+      padding: 11px 26px; background: #1a1a1a; border: none;
+      color: #faf8f2; font-family: Georgia, serif; font-size: 0.85rem;
+      border-radius: 6px; cursor: pointer; letter-spacing: 0.08em; margin-bottom: 10px;
+    }
+    #btn:disabled { background: #999; }
+    #result-box {
+      border: 2px solid #1a1a1a; border-radius: 10px;
+      padding: 10px 14px; margin-bottom: 8px; display: none; text-align: left;
+    }
+    .res-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .res-day-circle {
+      border: 2px solid #1a1a1a; border-radius: 50%;
+      width: 40px; height: 40px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: bold; line-height: 1.2; flex-shrink: 0;
+    }
+    .res-title { font-size: 1rem; font-weight: bold; color: #1a1a1a; }
+    .res-desc  { font-size: 0.7rem; color: #555; font-style: italic; margin-top: 2px; }
+    .res-meta  { font-size: 0.62rem; color: #888; margin-top: 5px; }
+    .book-btn {
+      display: block; margin-top: 8px; padding: 9px;
+      background: #1a1a1a; color: #faf8f2; text-align: center;
+      font-weight: bold; font-size: 0.82rem; border-radius: 6px;
+      letter-spacing: 0.12em; cursor: pointer;
+    }
+    .navbar {
+      display: flex; justify-content: space-around;
+      width: 100%; max-width: 420px;
+      border-top: 1px solid #ccc; padding: 8px 0 6px;
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center;
+      font-size: 0.52rem; color: #888; letter-spacing: 0.07em;
+      text-transform: uppercase; gap: 2px;
+    }
+    .nav-item span { font-size: 1rem; }
+  </style>
+</head>
+<body>
 
+<div class="header">
+  <div class="title">Evryday<br>Evrywhr<br>Yoga</div>
+  <div class="subtitle">You plan.<br>Monkey decides.</div>
+</div>
+
+<canvas id="c" width="360" height="360"></canvas>
+
+<div class="bottom">
+  <div class="let-monkey">⊙ LET THE MONKEY DECIDE!</div>
+  <div class="spin-text">Spin, shake, or tilt your phone<br>to see where the monkey lands.</div>
+  <div class="how-label">— HOW IT WORKS —</div>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><br>Rotate or tilt<br>your phone</div>
+    <div class="step"><div class="step-num">2</div><br>Scorpion moves<br>toward monkey</div>
+    <div class="step"><div class="step-num">3</div><br>Sting!<br>Monkey falls.</div>
+  </div>
+  <button id="btn">▶ Enable Motion</button>
+  <div id="result-box">
+    <div class="res-header">
+      <div class="res-day-circle">
+        <div id="res-icon">💡</div>
+        <div id="res-day">WED</div>
+      </div>
+      <div>
+        <div class="res-title" id="res-title">Creative Session</div>
+        <div class="res-desc"  id="res-desc">Ideas, flow, and unfiltered creativity.</div>
+        <div class="res-meta"  id="res-meta">⏱ 2–4 HRS · 1:1 OR GROUP</div>
+      </div>
+    </div>
+    <div class="book-btn" id="book-btn">PLAY AGAIN ↺</div>
+  </div>
+</div>
+
+<div class="navbar">
+  <div class="nav-item"><span>📅</span>CALENDAR</div>
+  <div class="nav-item"><span>🧘</span>SESSIONS</div>
+  <div class="nav-item"><span>🦂</span>STING BOARD</div>
+  <div class="nav-item"><span>🐒</span>PROFILE</div>
+</div>
+
+<script>
+  const canvas = document.getElementById('c');
+  const ctx    = canvas.getContext('2d');
+  const W = 360, H = 360, CX = 180, CY = 180;
+  const WHEEL_R = 130;
+  const TRACK_R = 55;
+  const MONKEY_W = 130, MONKEY_H = 185;
+  const SCORP_W = 70, SCORP_H = 70;
+
+  // Load images — wait for both before starting loop
+  const monkeyImg = new Image();
+  const scorpImg  = new Image();
+  let imagesReady = 0;
+  function onImageLoad() {
+    imagesReady++;
+    if (imagesReady >= 2) loop();
+  }
+  monkeyImg.onload  = onImageLoad;
+  monkeyImg.onerror = onImageLoad;
+  scorpImg.onload   = onImageLoad;
+  scorpImg.onerror  = onImageLoad;
+  monkeyImg.src = 'monkey.jpeg';
+  scorpImg.src  = 'scorpian.jpeg';
+
+  const ACTIVITIES = [
+    { day:'MON', label:'Focus\nTime',        icon:'💻', desc:'Deep work and concentration time.',        meta:'2–3 HRS · 1:1' },
+    { day:'TUE', label:'Podcast\nSession',   icon:'🎙️', desc:'Record, listen, or share your stories.',  meta:'1–2 HRS · GROUP' },
+    { day:'WED', label:'Creative\nSession',  icon:'💡', desc:'Ideas, flow, and unfiltered creativity.', meta:'2–4 HRS · 1:1 OR GROUP' },
+    { day:'THU', label:'Workout\n& Reset',   icon:'🏋️', desc:'Move your body, reset your mind.',        meta:'1 HR · GROUP' },
+    { day:'FRI', label:'Social\nChaos',      icon:'🍸', desc:'Connect, laugh, and let loose.',           meta:'2–4 HRS · GROUP' },
+    { day:'SAT', label:'Eat, Drink\nRegret', icon:'🍕', desc:'Indulge. No regrets (maybe some).',       meta:'Open ended · SOLO' },
+    { day:'SUN', label:'Recover\n& Reflect', icon:'🌿', desc:'Rest, reflect, and recharge.',            meta:'All day · SOLO' },
+  ];
+  const SLICES = ACTIVITIES.length;
+  const SLICE_ANGLE = (Math.PI * 2) / SLICES;
+
+  let scorpAngle  = Math.PI * 0.65;
+  let monkeyAngle = -Math.PI / 2;
+  let monkeySpeed = 0.007;
+  let accelX = 0;
+  let state = 'waiting'; // waiting | playing | biting | result
+  let biteTimer = 0;
+  let shakeT = 0;
+  let pickedActivity = null;
+  let fallenAngle = 0;
+
+  function randSpeed() {
+    monkeySpeed = (Math.random()*0.005 + 0.002) * (Math.random()<0.5 ? 1 : -1);
+    setTimeout(randSpeed, 2500 + Math.random()*3000);
+  }
+  randSpeed();
+
+  // ---- Draw wheel ----
+  function drawWheel() {
+    // Outer double ring
+    ctx.beginPath(); ctx.arc(CX, CY, WHEEL_R, 0, Math.PI*2);
+    ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.beginPath(); ctx.arc(CX, CY, WHEEL_R-6, 0, Math.PI*2);
+    ctx.lineWidth = 1; ctx.stroke();
+
+    // Inner circle
+    ctx.beginPath(); ctx.arc(CX, CY, 55, 0, Math.PI*2);
+    ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1; ctx.stroke();
+
+    for (let i = 0; i < SLICES; i++) {
+      const startA = monkeyAngle + i * SLICE_ANGLE;
+      const midA   = startA + SLICE_ANGLE / 2;
+
+      // Divider line
+      ctx.beginPath();
+      ctx.moveTo(CX + 55*Math.cos(startA), CY + 55*Math.sin(startA));
+      ctx.lineTo(CX + WHEEL_R*Math.cos(startA), CY + WHEEL_R*Math.sin(startA));
+      ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 1.5; ctx.stroke();
+
+      // Day label
+      const lx = CX + (WHEEL_R-13)*Math.cos(midA);
+      const ly = CY + (WHEEL_R-13)*Math.sin(midA);
+      ctx.save(); ctx.translate(lx, ly); ctx.rotate(midA + Math.PI/2);
+      ctx.font = 'bold 8px Georgia'; ctx.fillStyle = '#1a1a1a';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(ACTIVITIES[i].day, 0, 0);
+      ctx.restore();
+
+      // Icon
+      const ix = CX + (WHEEL_R*0.61)*Math.cos(midA);
+      const iy = CY + (WHEEL_R*0.61)*Math.sin(midA);
+      ctx.font = '12px serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(ACTIVITIES[i].icon, ix, iy);
+
+      // Activity label
+      const tx = CX + (WHEEL_R*0.80)*Math.cos(midA);
+      const ty = CY + (WHEEL_R*0.80)*Math.sin(midA);
+      ctx.save(); ctx.translate(tx, ty); ctx.rotate(midA + Math.PI/2);
+      ctx.font = '6px Georgia'; ctx.fillStyle = '#333';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ACTIVITIES[i].label.split('\n').forEach((ln, li, arr) => {
+        ctx.fillText(ln, 0, (li - (arr.length-1)/2) * 8 + 10);
+      });
+      ctx.restore();
+    }
+  }
+
+  // ---- Draw monkey image at center ----
+  function drawMonkey(shake) {
+    const ox = shake ? Math.sin(shakeT*9)*6 : 0;
+    const oy = shake ? Math.cos(shakeT*7)*4 : 0;
+    if (monkeyImg.complete && monkeyImg.naturalWidth > 0) {
+      ctx.drawImage(monkeyImg,
+        CX - MONKEY_W/2 + ox,
+        CY + 55 - MONKEY_H + oy,
+        MONKEY_W, MONKEY_H);
+      // Foot target indicator (subtle pulse)
+      const { fx, fy } = getFootPos();
+      const pulse = 0.6 + 0.4 * Math.abs(Math.sin(Date.now() / 400));
+      ctx.beginPath();
+      ctx.arc(fx + ox, fy + oy, 10, 0, Math.PI*2);
+      ctx.strokeStyle = `rgba(200,50,0,${pulse * 0.5})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    } else {
+      // Fallback circle if image not loaded
+      const g = ctx.createRadialGradient(CX-4, CY-4, 2, CX, CY, 20);
+      g.addColorStop(0, '#ffe080'); g.addColorStop(1, '#ff6a00');
+      ctx.beginPath(); ctx.arc(CX, CY, 20, 0, Math.PI*2);
+      ctx.fillStyle = g; ctx.fill();
+    }
+  }
+
+  // ---- Draw fallen monkey ----
+  function drawFallen() {
+    const fx = CX + (55*0.45)*Math.cos(fallenAngle);
+    const fy = CY + (55*0.45)*Math.sin(fallenAngle);
+    if (monkeyImg.complete && monkeyImg.naturalWidth > 0) {
+      ctx.save();
+      ctx.translate(fx, fy);
+      ctx.rotate(Math.PI / 2); // lay on side
+      ctx.drawImage(monkeyImg, -MONKEY_W/2, -MONKEY_H/2, MONKEY_W, MONKEY_H);
+      ctx.restore();
+    }
+    // Sting stars
+    ctx.font = '16px serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('✦', fx+30, fy-20);
+    ctx.fillText('✦', fx-30, fy-20);
+    ctx.fillText('✦', fx, fy-35);
+  }
+
+  // ---- Draw scorpion image ----
+  function drawScorpion() {
+    const sx = CX + TRACK_R * Math.cos(scorpAngle);
+    const sy = CY + TRACK_R * Math.sin(scorpAngle);
+    if (scorpImg.complete && scorpImg.naturalWidth > 0) {
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate(scorpAngle + Math.PI/2);
+      ctx.drawImage(scorpImg, -SCORP_W/2, -SCORP_H/2, SCORP_W, SCORP_H);
+      ctx.restore();
+    } else {
+      // Fallback circle
+      const g = ctx.createRadialGradient(sx-4, sy-4, 2, sx, sy, 16);
+      g.addColorStop(0, '#d8b4ff'); g.addColorStop(1, '#5510cc');
+      ctx.beginPath(); ctx.arc(sx, sy, 16, 0, Math.PI*2);
+      ctx.fillStyle = g; ctx.fill();
+    }
+  }
+
+  // ---- Collision ----
+  // Monkey foot is at bottom of the monkey image
+  function getFootPos() {
+    return {
+      fx: CX,
+      fy: CY + 55  // monkey foot sits on inner circle
+    };
+  }
+
+  function checkBite() {
+    const sx = CX + TRACK_R * Math.cos(scorpAngle);
+    const sy = CY + TRACK_R * Math.sin(scorpAngle);
+    const { fx, fy } = getFootPos();
+    // Only sting when scorpion is near the foot (bottom of inner circle)
+    const dist = Math.sqrt((sx - fx)**2 + (sy - fy)**2);
+    // Also check scorpion is near bottom arc (angle near PI/2)
+    const normAngle = ((scorpAngle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+    const atBottom = normAngle > Math.PI*0.3 && normAngle < Math.PI*0.7;
+    return dist < 28 && atBottom;
+  }
+
+  // ---- Pick activity ----
+  function pickActivity() {
+    let rel = ((scorpAngle - monkeyAngle) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
+    return ACTIVITIES[Math.floor(rel / SLICE_ANGLE) % SLICES];
+  }
+
+  // ---- Main loop ----
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#faf8f2'; ctx.fillRect(0, 0, W, H);
+
+    if (state === 'waiting') {
+      drawWheel();
+      drawMonkey(false);
+      drawScorpion();
+      ctx.font = 'italic 10px Georgia';
+      ctx.fillStyle = '#aaa'; ctx.textAlign = 'center';
+      ctx.fillText('Tap Enable Motion to start', CX, H - 8);
+
+    } else if (state === 'playing') {
+      monkeyAngle += monkeySpeed;
+      // Only move scorpion if tilt is significant (deadzone < 1.5)
+      if (Math.abs(accelX) > 1.5) {
+        scorpAngle += (accelX / 9.8) * 0.05;
+      }
+      drawWheel();
+      drawMonkey(false);
+      drawScorpion();
+      if (checkBite()) {
+        state = 'biting'; biteTimer = 0; shakeT = 0;
+        pickedActivity = pickActivity();
+        fallenAngle = scorpAngle;
+      }
+
+    } else if (state === 'biting') {
+      biteTimer++; shakeT += 0.35;
+      monkeyAngle += monkeySpeed * 4;
+      drawWheel();
+      drawMonkey(true);
+      drawScorpion();
+      ctx.font = 'bold 22px Georgia';
+      ctx.fillStyle = '#cc2200'; ctx.textAlign = 'center';
+      ctx.fillText('STING! 🦂', CX, 30);
+      if (biteTimer > 85) { state = 'result'; showResult(); }
+
+    } else if (state === 'result') {
+      drawWheel();
+      drawFallen();
+      drawScorpion();
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  function showResult() {
+    if (!pickedActivity) return;
+    document.getElementById('res-icon').textContent  = pickedActivity.icon;
+    document.getElementById('res-day').textContent   = pickedActivity.day;
+    document.getElementById('res-title').textContent = pickedActivity.label.replace('\n', ' ');
+    document.getElementById('res-desc').textContent  = pickedActivity.desc;
+    document.getElementById('res-meta').textContent  = '⏱ ' + pickedActivity.meta;
+    const box = document.getElementById('result-box');
+    box.style.display = 'block';
+    box.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  document.getElementById('book-btn').addEventListener('click', () => {
+    state = 'playing';
+    scorpAngle = Math.PI * 0.65;
+    shakeT = 0; pickedActivity = null;
+    document.getElementById('result-box').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ---- Accelerometer ----
+  window.addEventListener('devicemotion', (e) => {
+    const acc = e.accelerationIncludingGravity;
+    if (!acc || acc.x === null) return;
+    accelX = accelX * 0.75 + acc.x * 0.25;
+  });
+
+  document.getElementById('btn').addEventListener('click', async () => {
+    if (typeof DeviceMotionEvent !== 'undefined' &&
+        typeof DeviceMotionEvent.requestPermission === 'function') {
+      const res = await DeviceMotionEvent.requestPermission();
+      if (res !== 'granted') { alert('Permission denied'); return; }
+    }
+    document.getElementById('btn').textContent = '🦂 Tilt to move scorpion!';
+    document.getElementById('btn').disabled = true;
+    state = 'playing';
+  });
+
+  // loop() is called once both images load
+</script>
+</body>
+</html>
